@@ -1,0 +1,39 @@
+services:
+  db:
+    image: mysql:5.7
+    container_name: snippetbox-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=cN7uB2fV6pJ4mI9jU4xE2oW0cD0eQ9zR
+      - MYSQL_DATABASE=snippetbox
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=vQ1kN7uJ1nN4dL2kG1aN3bE9eQ6vM4nH
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    ports:
+      - 3306:3306
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./scripts/:/docker-entrypoint-initdb.d
+    command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    networks:
+      - app-network
+  server:
+    container_name: snippetbox-server
+    build:
+      context: .
+    ports:
+      - "4000:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:

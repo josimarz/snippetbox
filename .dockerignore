@@ -1,0 +1,4 @@
+.vscode
+.gitignore
+docker-compose.yml
+Makefile
